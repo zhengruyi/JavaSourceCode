@@ -1,5 +1,7 @@
 package test;
 
+import java.util.Date;
+
 /**
  * @author Ruyi ZHENG
  * @version 1.00
@@ -7,8 +9,14 @@ package test;
  **/
 
 public class ObjectTest {
-    public static void main(String[] args) {
-        Object o = new Object();
-        System.out.println(o.toString());
+    public static void main(String[] args) throws CloneNotSupportedException {
+       Test test = new Test();
+       test.clone();
+    }
+}
+class Test extends Object{
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return  super.clone();
     }
 }
