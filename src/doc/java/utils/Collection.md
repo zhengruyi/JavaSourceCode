@@ -31,3 +31,13 @@ Collection表示一组数据的集合,可能包含重复元素也可能不包含
 
 默认的方法实现并不支持各种同步协议,如果集合要实现某种同步协议,那么就需要重写全部的默认
 实现来支持这个协议.
+
+* int size():
+返回集合内部的元素数目,如果集合内部的元素数目超过Integer.MAX_VALUE,那么就返回Integer.MAX_VALUE
+
+* boolean isEmpty():
+如果是空集合就返回true,不然就返回false
+
+* boolean contains(Object o):
+如果集合中至少存在一个元素满足以下: (o==null ? e==null : o.equals(e)),如果以上表达式返回true
+那么函数最终返回true.
