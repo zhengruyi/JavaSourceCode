@@ -88,3 +88,46 @@ Collection表示一组数据的集合,可能包含重复元素也可能不包含
 * boolean removeAll(Collection<?> c):
 将这个集合中所有在集合c中出现的元素删除,在这个方法运行后这个集合中不包含任何在集合c中出现的元素
 
+* boolean removeIf(Predicate<? super E> filter):
+移除集合中所有满足给定的predicate 过滤器的元素,由于迭代器或者过滤器抛出的异常会被延迟到调用者抛出。
+默认的实现是使用迭代器来遍历元素,毛哥满足过滤条件的元素会被迭代器使用remove()方法删除掉
+但如果iterator不支持删除方法，那么在遇到的第一个匹配的元素时就会抛出UnsupportedOperation异常
+
+* boolean retainAll(Collection<?> c):
+遍历集合，只保留集合c中出现的元素,换句话说，移除集合中所有不在集合c中出现过的元素
+
+* void clear():
+一处集合中的所有元素,在方法调用完成后,集合将会变成一个空的集合
+
+* boolean equals(Object o):
+    * Collection并没有对Object的equals方法做出改变,对于那么直接实现Collection接口的类
+还是只需要实现reference comparison,那么就可以直接依赖object的比较方法,而对于那些
+子接口比如list或者set,则需要实现特定的值比较接口,那么就必须重写这个方法
+
+    * equals()方法要遵守对称性，list和set的equals()方法只能参数是list或者set时才能返回true
+    所以当一个集合既没有实现list或者set接口，那么他的自定义equals()方法在被调用和list或者set比较时一定会返回false
+    所以一个类不可以同时实现list和set接口
+
+* int hashCode():
+Collection 类没有对Object的哈希码方案做出修改,但是任何修改了equals()方法的就必须要重写hashcode()方法
+
+* Spliterator<E> spliterator():
+    * 实现应该记录下Spliterator返回的特征值,但是当集合里面不包含元素时,我们不需要记录这个特征值
+    * 子类需要重写这个方法来返回一个更加高效的分割器来支持stream()和parallelStream()
+    * 分隔符应该有IMMUTABLE  or CONCURRENT特征,如果这些都不可行，那么上层的类应该描述分流器的书面约束和结构干扰政策，
+    并且应该重写stream()和parallelStream()方法,并且利用spliterator.Supplier来创建一个流
+    `Stream<E> s = StreamSupport.stream(() -> spliterator(), spliteratorCharacteristics)`
+a
+    * 这就能确保由stream()和parallelStream()方法产生的流能反应创建流时集合的内容
+    * Collection的spliterator继承自集合的迭代器,所以它也继承了迭代器的fast-fail特性
+    * 如果分隔符不包含元素,那么就报告其他的特征值,对于空的集合,可以使用空的且不可变的spliterator实例
+    
+* Stream<E> stream():
+返回一个顺序流,使用这个集合作为源头,当集合的spliterator()方法不能返回一个immutable and concurrent
+的spliterator时,这个方法需要被重写
+
+* Stream<E> parallelStream():
+把集合作为源头,返回一个集合作为源头的可能的并行流,这个方法也允许返回一个顺序流，默认的实现是从Spliterator中分割出
+并行流
+
+    
