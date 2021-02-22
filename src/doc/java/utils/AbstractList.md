@@ -36,4 +36,36 @@
 移除某个位置的元素,默认实现是抛出UnsupportedOperationException
 
 * int indexOf(Object o):
-通过列表迭代器来迭代列表，直到找到第一个相等的元素,具体实现是通过
+通过列表迭代器来迭代列表，直到找到第一个相等的元素,具体实现是通过迭代器来找到相等的元素
+相等是通过是否是Null或者元素的equals()方法,通过调用索引previousIndex()方法返回具体的下标
+如果找不到合适的元素就返回-1
+
+* int lastIndexOf(Object o):
+具体实现是从列表末尾处获取一个列表迭代器,然后向前迭代,如果能找到相等的元素,就用nextIndex()
+来获得元素的索引
+
+* void clear():
+移除列表中的所有元素,在方法执行完成后,列表会被清空,这里是调用removeRange(0,size())
+来将元素删除,在remove(int index) or removeRange(int fromIndex, int toIndex未
+实现,那么就会抛出异常
+
+* boolean addAll(int index, Collection<? extends E> c):
+用集合c的迭代器来遍历集合,并且对每个元素都用add(int index, E e)来将元素元素添加
+到集合中,很多集合类会重写这个方法来达到更好的性能
+
+* Iterator<E> iterator():
+返回一个迭代器来以合理的顺序来遍历列表,这里提供了对Iterator()的直接实现,依赖列表本身
+的size(),remove(),get()这些方法,如果当前类没有提供remove()方法实现,那么Iterator()
+方法会抛出UnsupportedOperationException
+
+* ListIterator<E> listIterator():
+构建一个列表迭代器返回，列表迭代器的起始位置是0
+
+* ListIterator<E> listIterator(final int index):
+这个方法直接实现了ListIterator方法,并且继承了Iterator()接口的实现方法
+ListIterator()的实现依赖列表的set(),add(),get(), remove()方法，如果这些
+方法未实现，就会抛出UnsupportedOperation
+
+* ### Itr.Class
+  这个类实现了Iterator()接口
+  * int cursor: 下一次调用 next()方法返回的元素的索引
