@@ -69,3 +69,29 @@ ListIterator()的实现依赖列表的set(),add(),get(), remove()方法，如果
 * ### Itr.Class
   这个类实现了Iterator()接口
   * int cursor: 下一次调用 next()方法返回的元素的索引
+  * lastRet: 上一个被next()或者previous()方法返回的元素的索引,如果这个元素被方法删除了,那么
+  就设成-1
+  * expectedModCount: list因该有的 modCount的，如果这个数字改了，那么iterator就直到发生了并行修改
+  * boolean hasNext():如果还有元素未遍历,那么就返回true，否则返回false.实现方法是比较curson是否等于size()
+  * checkForComodification(): 检查当前的modCount是否和expectedModCount相等，不相等就说明发生了并行修改
+  抛出ConcurrentModificationException
+  * E next(): 返回列表中的下一个元素,首先是调用checkForComodification()，然后在通过
+  get(int cursor)返回下一个元素,然后更新lastRet和cursor的值，返回元素,如果列表超界
+  那么就现检查是否发生了并发修改,然后看抛出NoSuchElementException
+  
+  * void remove():先检查lastRet是否大于0,不然说明迭代器还没有迭代过，或者当前已经删除过某个元素了
+  调用AbstractList的remove(int index)来删除一个元素,然后cursor减去1，重新复制expectedModCount，
+  这也是唯一合法的可以在迭代器遍历过程中删除元素的方法
+
+* ### ListItr.class
+  这个类继承了Itr.class,并且实现了ListIterator的接口,这个类返回一个AbstractList的子类
+  这些子类会在私有域里面存两个变量,一个是父类列表的偏移量,一个是列表的大小,还有支持列表的expectedModCount
+  方法会返回两种变量, 如果一个类实现了RandomAccess接口,那么就会返回一个实现了RandomAcess接口的类的实例
+  
+  这些子类的各种操作方法都依赖父类，listIterator(int)的实现依赖列表本身的迭代器，本质上是一个列表迭代器
+  的包装对象,子类的iterator()方法直接返回listIterator(),而size()方法返回私有域上的值
+  
+  所有的方法都会检查modCount是否等于expectedModCount，如果不等就直接抛出异常
+  
+  * List<E> subList(int fromIndex, int toIndex): 首先检查当前这个list是否实现了RandomAccess接口,实现了就返回一个
+  对应类的实例,如果没有实现,那么就返回一个SubClass的实例.
