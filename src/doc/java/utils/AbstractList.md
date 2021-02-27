@@ -95,3 +95,25 @@ ListIterator()的实现依赖列表的set(),add(),get(), remove()方法，如果
   
   * List<E> subList(int fromIndex, int toIndex): 首先检查当前这个list是否实现了RandomAccess接口,实现了就返回一个
   对应类的实例,如果没有实现,那么就返回一个SubClass的实例.
+  
+  * boolean equals(Object o):检查两个对象是否相等,首先会检查对象是否是list对象,然后使用
+  迭代器来遍历每个元素，要求两个链表对应位置的元素也相等,最后还要求两个链表的长度是等长的,不等长也会返回false
+  
+  * int hashCode():计算整个列表的哈希码,实现时
+  ```
+  int hashCode = 1;
+  for (E e : this)
+    hashCode = 31*hashCode + (e==null ? 0 : e.hashCode());
+    return hashCode;
+  ```
+  * void removeRange(int fromIndex, int toIndex):将列表中的[fromIndex,toIndex)之间的元素删除将后续的元素全部左移，减少他们的index
+  如果fromIndex和toIndex相等,那么就不会对列表产生影响.这个方会被这个类和子类的clear()方法所调用,可以重写来提高方法的性能.方法的实现中是采用
+  是用fromIndex获取一个列表的迭代器，然后迭代删除给定的区间
+  
+  * int modCount:用来记录list经历过多少次结构性的修改,结构性修改是指改变列表大小的方法或者其他可能会导致列表迭代产生错误的方法
+  这个属性用在iterator和listterator方法中,如果这个值发生了未预料的改动,那么就是抛出并发需改异常
+  这提供了快速失败的特性,而不是返回不确定的结果,如果子类希望提供一个fast-fail的迭代器就要使用这个方法,就要使用这个属性
+  在add()和remove()方法中要加不得超过1的数值,不然会产生bug.
+  
+  * void rangeCheckForAdd(int index):检查给定的Index是否超界,如果是就抛出异常
+  * String outOfBoundsMsg(int index):返回错误的信息,想要寻找的index和当前列表的大小
