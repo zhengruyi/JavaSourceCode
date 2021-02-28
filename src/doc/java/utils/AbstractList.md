@@ -117,3 +117,45 @@ ListIterator()的实现依赖列表的set(),add(),get(), remove()方法，如果
   
   * void rangeCheckForAdd(int index):检查给定的Index是否超界,如果是就抛出异常
   * String outOfBoundsMsg(int index):返回错误的信息,想要寻找的index和当前列表的大小
+
+* ### SubList<E>.class
+    * final AbstractList<E> l: 父类AbstractList的列表实例,用来调用父类实现的方法
+    * final int offset: 记录子列表从父类的起始的位置
+    * int size:记录子列表的大小
+    * SubList(AbstractList<E> list, int fromIndex, int toIndex):初始化子列表对象,另外记录此时父列表的modCount
+    * E set(int index, E element):首先检查输入的index是否符合要求,然后检查是否存在并发修改,最后调用父列表的set()方法进行修改，在指定位置替换元素,
+    这里要在原来的Index位置上加上offset
+    * E get(int index):首先检查输入的index是否符合要求,然后检查是否存在并发修改,然后调用
+    l.get(index+offset)来获取元素
+    * int size():获取子列表的大小,直接返回属性的值就可以
+    * void add(int index, E element):首先检查输入的index是否符合要求,然后检查是否存在并发修改,最后调用父列表的add(index, E e)
+     进行添加元素,随后修改modCount，最后size++
+    
+    * E remove(int index): 首先检查输入的index是否符合要求,然后检查是否存在并发修改,最后调用父列表的remove(index + offset)来进行修改
+    最后重新赋值modCount,最后修改size, size--;
+    * void removeRange(int fromIndex, int toIndex):然后检查是否存在并发修改,最后调用父列表的remove(fromIndex + offset, toIndex + offset)
+    来删除区间内的元素,最后重新赋值modCount,然后修改size大小
+    
+    * boolean addAll(Collection<? extends E> c): 这个方法实现时调用addAll(size,Collection c)
+    来完成的
+    
+    * boolean addAll(int index, Collection<? extends E> c): 首先检查index是否合理,然后检查是否发生了并行修改
+    然后调用父类的addAll方法来将集合添加到列表里,最后重新赋值modCount和size
+    
+    * Iterator<E> iterator(): 返回一个列表迭代器
+    
+    * ListIterator<E> listIterator(final int index): 提供一个列表迭代器，其中提供了具体的实现
+    具体的迭代器的操作大部分依靠父类的列表迭代器来操作
+    
+    * List<E> subList(int fromIndex, int toIndex):构造一个SubList实例
+    
+    * checkForComodification():检查是佛福安生了并行修改
+    
+    ### RandomAccessSubList.class
+    这个子类继承了SubList,并且实现了RandomAccess接口,当AbstractionList 子类实现了RandomAccess接口时
+    就会构造一个这个类的实例返回
+    
+    * RandomAccessSubList(AbstractList<E> list, int fromIndex, int toIndex):
+    构造一个实例
+    
+    * List<E> subList(int fromIndex, int toIndex):构造一个实例
