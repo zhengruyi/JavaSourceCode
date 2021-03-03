@@ -96,3 +96,14 @@ ArrayList不是线程安全的，所以如果多个线程希望同时操作一�
 数目填满后将size位置设置成null
 
 * E elementData(int index):返回某个数组某个位置的元素
+* E get(int index): 返回列表某个位置的元素,首先需要验证索引范围是否合理
+* E set(int index, E element):将某个位置上的元素替换成某个新的元素
+* boolean add(E e): 首先会检查数组是否容量足够,这里会调用ensureCapacity(int minCapacity)
+来确保容量,然后将新的元素添加到数组末尾,modCount++
+
+* void add(int index, E element): 将元素添加到指定位置,实现中首先先进行数组范围检查，然后检查数组是否剩余容量
+然后用System.arraycoppy()方法将后半段数组拷贝一下,最后在指定位置放入元素,结束操作,modCount++
+
+* E remove(int index):移除指定位置的元素,首先进行rangeCheck(),modCount++,计算后续要移动的元素
+数目,将数组的后半段元素往前拷贝一步,最后将末尾的元素赋值成null来通知GC进行回收
+
