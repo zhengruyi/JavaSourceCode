@@ -107,3 +107,31 @@ ArrayList不是线程安全的，所以如果多个线程希望同时操作一�
 * E remove(int index):移除指定位置的元素,首先进行rangeCheck(),modCount++,计算后续要移动的元素
 数目,将数组的后半段元素往前拷贝一步,最后将末尾的元素赋值成null来通知GC进行回收
 
+* boolean remove(Object o):移除数组中的某个元素,如果数组中不包含指定元素,那么什么都不会改变,
+如果列表中存在多个元素,那么就移除数组下标最小的那个元素,在实现实现过程中,先在列表中找到那个特定的元素
+再调用fastRemove()方法来删除指定位置的元素,本质上就是先增大modCount,然后调用System.arraycopy()来
+来批量移动元素,最后将末尾的元素改成null，来通知来及收集器收掉这个对象
+
+* void fastRemove(int index):移除操作的实际执行着,本质上就是先增大modCount,然后调用System.arraycopy()来
+来批量移动元素,最后将末尾的元素改成null，来通知来及收集器收掉这个对象
+
+* void clear():将数组的元素全部清空,实现使用for循环将数组的每个位置都变成null,将size变成0
+
+* boolean addAll(Collection<? extends E> c):将集合中的元素都放入列表末尾,顺序使集合迭代器返回元素的顺序
+实现是首先将集合转化成数组,然后获取数组容量,检查数组容量是否足够,不够就扩容,最后用System.arraycopy()
+方法拷贝元素放入数组末尾,更新数组的长度。
+
+* boolean addAll(int index, Collection<? extends E> c):将集合的元素全部插在指定位置后面,所偶遇后续元素
+往右移动,计算后半段要移动的元素,实现过程是将后半段元素移动,然后将集合的元素拷贝到指定的位置
+
+* void removeRange(int fromIndex, int toIndex):移除区间[fromIndex,toIndex)之间的元素
+实现是计算数组删除后剩下的元素,然后直接调用system.arraycopy()将元素覆盖掉,最后用将数组末尾无用的元素
+全部赋值成null,调整数组大小
+
+* void rangeCheck(int index):检查索引是不是超出数组界限,大于时抛出异常IndexOutOfBoundsException
+* void rangeCheckForAdd(int index):给add和addAll()方法进行范围检查,这里Index == size是可以的，表示将元素加到数组末尾
+* String outOfBoundsMsg(int index):构建数组越界IndexOutOfBoundsException的错误信息
+
+
+
+
