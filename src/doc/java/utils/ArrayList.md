@@ -131,6 +131,41 @@ ArrayList不是线程安全的，所以如果多个线程希望同时操作一�
 * void rangeCheck(int index):检查索引是不是超出数组界限,大于时抛出异常IndexOutOfBoundsException
 * void rangeCheckForAdd(int index):给add和addAll()方法进行范围检查,这里Index == size是可以的，表示将元素加到数组末尾
 * String outOfBoundsMsg(int index):构建数组越界IndexOutOfBoundsException的错误信息
+* removeAll(Collection<?> c):将集合的所有元素都从列表中移除,实现中首先检查Collection是否为null,然后
+调用batchRemove()方法来实现批量移除操作
+
+* boolean retainAll(Collection<?> c):将列表中所有不再集合中的元素都移除,内部实现也是交给batchRemove()方法移除的
+
+* boolean batchRemove(Collection<?> c, boolean complement):删除的真正的实现方法,桌和遍历数组中的元素,挨个去检查集合c
+中是否存在这个元素,根据存不存在来决定元素是否删除,用一个变量来只是有多少个元素保留下来,简化末尾的元素全部置成null来让gv进行收集
+最后调整modCount, modCount += size - w;调整size = w,然后返回结果
+
+* void writeObject(java.io.ObjectOutputStream s):将数组的状态保存为数据流,用循环将列表的元素
+挨个写入列表中,最后检查是否发生了并发修改
+
+* void readObject(java.io.ObjectInputStream s):从数据流中重建一个ArrayList
+* ListIterator<E> listIterator(int index):从Index位置构建一个列表迭代器，Index代表迭代器第一次要返回的元素,previous()
+将会返回Index - 1的元素
+
+* ListIterator<E> listIterator():返回一份从Index = 0开始的列表迭代器
+* Iterator<E> iterator():返回一个迭代器来遍历列表
+* ###Itr.class
+    * 这是一个AbstractList.Itr的优化的迭代器
+    * int cursor:下一个要返回的元素坐标
+    * int lastRet:上一个返回元素的下标,如果没有就返回-1
+    * int expectedModCount:创建时的结构化修改的次数
+    * boolean hasNext():判断cursor是否等于size
+    * E next():返回迭代器的下一个元素,首先检查并发修改,然后检查是否到了数组末尾,如果是就抛出NoSuchElementException
+    检查当前下标是否超过列表内部的数组的长度,是则发生了并发修改,最后更新lastRet和cursor，返回元素
+    * void remove():使用迭代器来删除返回的元素,首先检查并发修改,然后用remove()删除某个元素,然后用
+    cursor 修改成lasrRet,将lastRet修改成-1,因为每次next()方法后只能调用一次remove()
+    重新复制expectedModCount = modCount
+    
+    * void forEachRemaining(Consumer<? super E> consumer):对每个迭代器中的剩余为遍历的元素,都应用consumer的accept()的方法
+    首先检查consumer不是null,在数组还有剩余元素且没发生并发修改时,就对每个剩余的元素都应用consumer接口的accept方法
+    
+    * void checkForComodification():检查是否发生了并发修改
+    
 
 
 
