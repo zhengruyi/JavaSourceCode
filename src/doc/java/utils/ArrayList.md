@@ -166,6 +166,41 @@ ArrayList不是线程安全的，所以如果多个线程希望同时操作一�
     
     * void checkForComodification():检查是否发生了并发修改
     
+* ###ListItr.class
+    * 这是对AbstractList.ListItr的优化实现
+    * boolean hasPrevious():看前方是否还有元素,实现方法是判断cursor是否等于0
+    * int nextIndex():返回下一个返回元素的下标,实现是返回cursor的值
+    * int previousIndex():返回上一个返回元素的下标,值等于cursor - 1
+    * E previous():返回上一个元素,实现是检查边界，检查并发修改,然后修改cursor的值和lastRet的值,
+    将数组中上一个位置的元素返回
+    * void set(E e):讲一个返回的元素修改成给定的元素,实现是先检查边界范围,然后检查并发修改,最后调用本类中的
+    set方法来修改某个元素
+    
+    * void add(E e):将某个元素加到当前位置,然后调整cursor+=1的位置，并且将lastRet设置成-1
+    重新赋值expectedModCount
+
+*  public List<E> subList(int fromIndex, int toIndex):返回一个列表的部分视图,返回的部分视图基于原来的链表,
+所以远啊来链表的任何非结构性改变，都会反馈到部分列表的视图上,部分列表的视图消除了明确的范围操作,任何的范围操作都可以通过将
+整个列表用部分列表来替代来达到正常的操作,视图支持所有的Collection的算法,但是如果支持列表发生了结构性变化,那么视图的操作
+就会变的未知
+
+* static void subListRangeCheck(int fromIndex, int toIndex, int size):检查要生成的视图范围是否合法
+
+* ###SubList.class
+    * 这是一个继承AbstractList并且实现了RandomAccess接口的类,只要作用就是生成部分列表的视图
+    * final AbstractList<E> parent:指向父类AbstractList对象的指针
+    * final int parentOffset:当前部分视图相对于父类视图的偏移量
+    * final int offset:部分列表内的偏移量
+    * int size:部分列表内部的元素数目
+    * SubList(AbstractList<E> parent,int offset, int fromIndex, int toIndex):构造方法
+    * E set(int index, E e):和父类实现一样,只不过内部把index替换成了offset + index
+    * E get(int index):内部把index加上offset来获取对应位置的元素
+    * int size():返回视图内部的元素数目
+    * void add(int index, E e):添加一个元素,在内部将index 加上了parentOffset
+    * E remove(int index):移除Index位置处的元素，调用父类的移除方法,并在Index上增加parentOffset
+    size -= 1和调整ModCount
+    * void removeRange(int fromIndex, int toIndex):移除范围内的所有元素,本质还是调用父类方法加上固定偏移量,随后调整
+    modCount和size。
 
 
 
