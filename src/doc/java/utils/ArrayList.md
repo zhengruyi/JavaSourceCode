@@ -201,6 +201,40 @@ ArrayList不是线程安全的，所以如果多个线程希望同时操作一�
     size -= 1和调整ModCount
     * void removeRange(int fromIndex, int toIndex):移除范围内的所有元素,本质还是调用父类方法加上固定偏移量,随后调整
     modCount和size。
+    
+    * boolean addAll(Collection<? extends E> c):将集合里面的元素都加入到数组中,内部实现调用
+    AbstractList.addAll()进行实现,提供默认位置数组尾部
+    
+    * boolean addAll(int index, Collection<? extends E> c):将集合中的元素添加到数组的某个位置后面,实现中会检查集合的
+    中的元素数量,然后调用AbstractList.addAll()方法进行实现,然后重新复制ExpectedCount和调整size的大小
+    
+    * Iterator<E> iterator():返回一个列表迭代器
+    * ListIterator<E> listIterator(final int index):返回一个列表迭代器
+    * void forEach(Consumer<? super E> action):多余列表的每一个元素都应用accpet()方法
+    实现是用for循环来遍历链表,边遍历边应用accept()方法
+    
+    * Spliterator<E> spliterator():在列表上创建一个延迟绑定和快速失败的分割器,是现实创建一个ArrayListSpliterator实例
+* ###ArrayListSpliterator<E>.class
+    * 这个类实现了Spliterator接口
+    * final ArrayList<E> list:保存指向父类对象的链接
+    * int index: 当前下标，在advance和split方法时会修改
+    * int expectedModCount:结构性改变的次数
+    * ArrayListSpliterator(ArrayList<E> list, int origin, int fence,
+                                   int expectedModCount):构造方法
+    * int getFence():获取数组的边界,同时赋值expectedCount,边界是数组的末尾,在数组为空时，边界是0
+    * ArrayListSpliterator<E> trySplit():将数组分成相等的两半
+    * boolean tryAdvance(Consumer<? super E> action):对列表的下一个元素使用action.accept()方法
+    * void forEachRemaining(Consumer<? super E> action):对还没有遍历到的元素应用action.accept()方法
+    
+* boolean removeIf(Predicate<? super E> filter):将符合条件的元素全部移除,实现是首先遍历数组,将满足过滤器
+的下标在BittSet中将对应位置设置成true,然后根据bitSet重新遍历一遍数组,将要删除的元素过滤掉，最后将末尾的元素时全部设置成null
+更新size和重新赋值expectedModCount
+
+* void replaceAll(UnaryOperator<E> operator):
+遍历数组，对其中的每个元素都应用operator,最后检查并发修改异常
+
+* void sort(Comparator<? super E> c):对数组进行排序,实现中因为内部是数组，所以直接采用
+Arrays.sort()进行数组排序,最后对modCount加1
 
 
 
