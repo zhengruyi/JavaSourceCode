@@ -76,3 +76,48 @@ LinkedList类继承AbstractionList,并且实现了List,Deque,Cloneable和Seriali
 * boolean addAll(Collection<? extends E> c):将给定集合按迭代器返回的元素顺序将这些元素插入链表的末尾
 ，具体的实现是通过调用addAll(size,c)方法来实现添加。
 
+* boolean addAll(int index, Collection<? extends E> c):将集合中的所有元素添加到链表的index位置后面,index后面的
+所有元素都顺序后移,实现中先检查索引是否合法,然后找到索引位置的节点,这里分两种情况index = size时表示插入到链表末尾,这时表示
+当前节点的succ为null,后续就是将集合中的元素取出,挨个插入链表,最后根据Index是否等于size
+调整last指针，更新size += newNum和modCount的值
+
+* void clear():将链表里面的所有元素的值都删除,在这行这个函数后,链表回到空状态
+实现就是遍历链表,将每一个链表节点取出来将值和指针都设置成null,方便gc收集，最后将last和first
+指针重置成null,来表示链表为空,size 设置成0
+
+* E get(int index):获取链表中某个位置的元素,具体实现是检查完索引后,用node(int index)方法
+来获取特定位置的节点,然后返回节点的值
+
+* E set(int index, E element):将index位置处的链表节点的元素更新成element,并返回旧的值
+具体操作是通过node()方法来定位到index处的来表节点，然后将item属性替换成新的值,注意更新值
+不会涉及到modCount的改变
+
+* void add(int index, E element): 创建一个新的链表节点,包含元素element
+并将这个链表节点插入到Index处,具体实现是检查完索引后,检查index是否等于size,如果等于就直接调用
+linkLast方法，如果不等于就调用linkeBefore(element,node(index))方法来将新的节点插入到某个指定的节点前面
+
+* E remove(int index):将特定Index位置的链表节点删除,具体实现是通过node(index)来返回
+特定位置的节点,然后通过unlink()方法将这个链表节点从链表中删除
+
+* boolean isElementIndex(int index):检查index的索引处是否现存元素,检查的标准是
+要求Index >=0 && index < size
+
+* boolean isPositionIndex(int index):检查给定index是否可以插入元素,判断标准是
+index >=0 && index <= size
+
+* String outOfBoundsMsg(int index): 返回越界的信息
+
+* void checkElementIndex(int index):检查搜索元素的索引是否合法,内部调用 isElementIndex(int index)
+进行检查
+
+* void checkPositionIndex(int index):检查这个位置是否可以插入元素,内部用isPositionIndex(index)
+来进行判断
+
+* Node<E> node(int index):将特定换位置的链表节点返回,因为内部是双向链表,所以根据Index和size/2的关系,
+会考虑从头往后搜索还是从尾部向头部搜索
+
+* int indexOf(Object o):搜索给定的元素的下标,从头部开始往后搜索，根据o是否为null分成两种情况讨论,
+最后返回第一次找到的链表节点的下标,如果找不到这个元素,就返回-1
+
+* int lastIndexOf(Object o):从后往前搜索,找到第一个相等的元素,返回对应的下标,如果找不到就返回-1
+
