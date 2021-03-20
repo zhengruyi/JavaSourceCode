@@ -121,3 +121,36 @@ index >=0 && index <= size
 
 * int lastIndexOf(Object o):从后往前搜索,找到第一个相等的元素,返回对应的下标,如果找不到就返回-1
 
+* public E peek():获取链表的第一个元素,但是不移除这个头部元素,根据first是否为null,来决定返回的元素
+first为null,则返回null.不然就返回item属性的值
+
+* public E element():和上一个方法一样,都是获取一个链表头部的第一个元素,但是不移除
+
+* public E poll():移除链表的第一个头部元素,并且返回移除的节点的值,实际的实现是调用
+unlinkFirst()方法将头结点移除的
+
+* public E remove():移除链表头部的第一个节点,并且将被移除的节点的值返回,具体
+实现是通过 removeFirst()方法来实现的
+
+* public boolean offer(E e):将特定的元素e添加到链表的末尾,具体实现是通过调用add()方法
+来将元素添加到末尾的
+
+* public boolean offerFirst(E e):将特定的元素e添加到链表的头部,内部是通过调用addFirst()
+方法来进行实现的
+
+* public boolean offerLast(E e):将特定的元素e添加到链表的尾部,true表示插入成功
+
+*  public E peekFirst():返回链表的第一个节点的元素，但并不移除这个节点,如果链表为空
+那么就返回null
+
+* public E peekLast():返回链表的尾部元素,但并不移除,如果链表是空的,那么就返回null
+* public E pollFirst():返回链表的头部元素,并且移除这个元素,如果链表为空就返回null,具体是通过unlinkFirst()来进行
+操作,将链表的元素移除的
+* public E pollLast():返回链表的尾部元素,并且移除这个元素,如果链表为空就返回null,具体是通过unlinkLast()来进行
+操作,将链表的元素移除的.
+* public void push(E e):将数据压入栈,换句话说将元素e压入链表的头部,内部是通过addFirst(e)来进行操作的
+* public E pop():将栈顶的元素移除,换句话说,移除链表头部的第一个元素,内部通过removeFirst()方法进行操作
+* public boolean removeFirstOccurrence(Object o):移除数组中一个和给定元素相等的链表节点,如果链表中没有节点符合和给定目标相等的节点
+那么整个链表保持不变.具体的内部实现是通过remove(o)方法来实现的。
+
+
